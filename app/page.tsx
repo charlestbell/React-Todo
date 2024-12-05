@@ -60,8 +60,6 @@ export default function Home() {
     setTodos(todos.filter((todo) => todo.id !== id));
   };
 
-  console.log("TODOS", todos);
-
   return (
     <main className="min-h-screen p-8">
       <div className="max-w-2xl mx-auto todo-container p-6">
