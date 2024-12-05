@@ -1,6 +1,18 @@
 "use client";
-import { ClientPageRoot } from "next/dist/client/components/client-page";
 import { useState, useEffect } from "react";
+import {
+  Box,
+  Container,
+  TextField,
+  Button,
+  List,
+  ListItem,
+  Checkbox,
+  IconButton,
+  Typography,
+  Paper,
+} from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 interface Todo {
   id: number;
@@ -61,61 +73,143 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen p-8">
-      <div className="max-w-2xl mx-auto todo-container p-6">
-        <h1 className="text-3xl font-bold mb-8 text-center bg-gradient-to-r from-purple-400 to-pink-600 text-transparent bg-clip-text">
-          Todo App
-        </h1>
+    <Box
+      sx={{
+        minHeight: "100vh",
+        background: "linear-gradient(45deg, #1a237e, #000051)",
+        position: "relative",
+        overflow: "hidden",
+        "&::before": {
+          content: '""',
+          position: "absolute",
+          width: "200%",
+          height: "200%",
+          background: `radial-gradient(circle, rgba(25,118,210,0.1) 0%, rgba(25,118,210,0.05) 50%, transparent 100%)`,
+          animation: "rotate 20s linear infinite",
+        },
+        "@keyframes rotate": {
+          "0%": {
+            transform: "translate(-50%, -50%) rotate(0deg)",
+          },
+          "100%": {
+            transform: "translate(-50%, -50%) rotate(360deg)",
+          },
+        },
+      }}
+    >
+      <Container maxWidth="md" sx={{ position: "relative", py: 8 }}>
+        <Paper
+          elevation={24}
+          sx={{
+            p: 4,
+            background: "rgba(18, 18, 38, 0.8)",
+            backdropFilter: "blur(10px)",
+            borderRadius: 2,
+          }}
+        >
+          <Typography
+            variant="h3"
+            component="h1"
+            sx={{
+              mb: 4,
+              textAlign: "center",
+              fontFamily: "'Space Grotesk', sans-serif",
+              fontWeight: 700,
+              fontSize: "3.5rem",
+              letterSpacing: "-0.02em",
+              background: "linear-gradient(45deg, #2196f3, #1976d2)",
+              backgroundClip: "text",
+              textFillColor: "transparent",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+            }}
+          >
+            Todos
+          </Typography>
 
-        <form onSubmit={addTodo} className="mb-8">
-          <div className="flex gap-2">
-            <input
-              type="text"
-              value={newTodo}
-              onChange={(e) => setNewTodo(e.target.value)}
-              className="flex-1 px-4 py-2 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:border-purple-500"
-              placeholder="Add a new todo..."
-            />
-            <button
-              type="submit"
-              className="px-6 py-2 bg-gradient-to-r from-purple-500 to-pink-600 rounded-lg hover:opacity-90 transition-opacity"
-            >
-              Add
-            </button>
-          </div>
-        </form>
-
-        <ul className="space-y-3">
-          {todos.length > 0 ? (
-            todos?.map((todo) => (
-              <li
-                key={todo.id}
-                className="flex items-center gap-3 p-4 rounded-lg bg-gray-800/50 border border-gray-700"
+          <Box component="form" onSubmit={addTodo} sx={{ mb: 4 }}>
+            <Box sx={{ display: "flex", gap: 1 }}>
+              <TextField
+                fullWidth
+                value={newTodo}
+                onChange={(e) => setNewTodo(e.target.value)}
+                placeholder="Add a new todo..."
+                variant="outlined"
+                sx={{
+                  "& .MuiOutlinedInput-root": {
+                    backgroundColor: "rgba(255, 255, 255, 0.05)",
+                    "& fieldset": {
+                      borderColor: "rgba(255, 255, 255, 0.1)",
+                    },
+                    "&:hover fieldset": {
+                      borderColor: "#1976d2",
+                    },
+                  },
+                }}
+              />
+              <Button
+                type="submit"
+                variant="contained"
+                sx={{
+                  background: "linear-gradient(45deg, #2196f3, #1976d2)",
+                  px: 4,
+                }}
               >
-                <input
-                  type="checkbox"
-                  checked={todo.completed}
-                  onChange={() => toggleTodo(todo.id, todo.completed)}
-                  className="w-5 h-5 rounded border-gray-600 bg-gray-700"
-                />
-                <span
-                  className={`flex-1 ${todo.completed ? "line-through text-gray-500" : ""}`}
+                Add
+              </Button>
+            </Box>
+          </Box>
+
+          <List sx={{ width: "100%" }}>
+            {todos.length > 0 ? (
+              todos.map((todo) => (
+                <ListItem
+                  key={todo.id}
+                  sx={{
+                    mb: 1,
+                    backgroundColor: "rgba(255, 255, 255, 0.03)",
+                    borderRadius: 1,
+                    border: "1px solid rgba(255, 255, 255, 0.05)",
+                  }}
+                  secondaryAction={
+                    <IconButton
+                      edge="end"
+                      onClick={() => deleteTodo(todo.id)}
+                      sx={{ color: "#ef5350" }}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  }
                 >
-                  {todo.title}
-                </span>
-                <button
-                  onClick={() => deleteTodo(todo.id)}
-                  className="text-red-500 hover:text-red-400"
-                >
-                  Delete
-                </button>
-              </li>
-            ))
-          ) : (
-            <div>Loading...</div>
-          )}
-        </ul>
-      </div>
-    </main>
+                  <Checkbox
+                    checked={todo.completed}
+                    onChange={() => toggleTodo(todo.id, todo.completed)}
+                    sx={{
+                      color: "rgba(255, 255, 255, 0.3)",
+                      "&.Mui-checked": {
+                        color: "#2196f3",
+                      },
+                    }}
+                  />
+                  <Typography
+                    sx={{
+                      ml: 2,
+                      textDecoration: todo.completed ? "line-through" : "none",
+                      color: todo.completed ? "text.disabled" : "text.primary",
+                    }}
+                  >
+                    {todo.title}
+                  </Typography>
+                </ListItem>
+              ))
+            ) : (
+              <Typography sx={{ textAlign: "center", color: "text.secondary" }}>
+                Loading...
+              </Typography>
+            )}
+          </List>
+        </Paper>
+      </Container>
+    </Box>
   );
 }
