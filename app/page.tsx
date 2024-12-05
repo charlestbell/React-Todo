@@ -1,5 +1,6 @@
-'use client';
-import { useState, useEffect } from 'react';
+"use client";
+import { ClientPageRoot } from "next/dist/client/components/client-page";
+import { useState, useEffect } from "react";
 
 interface Todo {
   id: number;
@@ -9,53 +10,57 @@ interface Todo {
 
 export default function Home() {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [newTodo, setNewTodo] = useState('');
+  const [newTodo, setNewTodo] = useState("");
 
   useEffect(() => {
     fetchTodos();
   }, []);
 
   const fetchTodos = async () => {
-    const response = await fetch('http://localhost:3001/api/todos');
+    const response = await fetch("http://localhost:3001/api/todos");
     const data = await response.json();
-    setTodos(data);
+    setTodos([...data]);
   };
 
   const addTodo = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTodo.trim()) return;
 
-    const response = await fetch('http://localhost:3001/api/todos', {
-      method: 'POST',
+    const response = await fetch("http://localhost:3001/api/todos", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({ title: newTodo }),
     });
     const data = await response.json();
     setTodos([data, ...todos]);
-    setNewTodo('');
+    setNewTodo("");
   };
 
   const toggleTodo = async (id: number, completed: boolean) => {
     await fetch(`http://localhost:3001/api/todos/${id}`, {
-      method: 'PUT',
+      method: "PUT",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({ completed: !completed }),
     });
-    setTodos(todos.map(todo => 
-      todo.id === id ? { ...todo, completed: !completed } : todo
-    ));
+    setTodos(
+      todos.map((todo) =>
+        todo.id === id ? { ...todo, completed: !completed } : todo
+      )
+    );
   };
 
   const deleteTodo = async (id: number) => {
     await fetch(`http://localhost:3001/api/todos/${id}`, {
-      method: 'DELETE',
+      method: "DELETE",
     });
-    setTodos(todos.filter(todo => todo.id !== id));
+    setTodos(todos.filter((todo) => todo.id !== id));
   };
+
+  console.log("TODOS", todos);
 
   return (
     <main className="min-h-screen p-8">
@@ -63,7 +68,7 @@ export default function Home() {
         <h1 className="text-3xl font-bold mb-8 text-center bg-gradient-to-r from-purple-400 to-pink-600 text-transparent bg-clip-text">
           Todo App
         </h1>
-        
+
         <form onSubmit={addTodo} className="mb-8">
           <div className="flex gap-2">
             <input
@@ -83,30 +88,36 @@ export default function Home() {
         </form>
 
         <ul className="space-y-3">
-          {todos.map((todo) => (
-            <li
-              key={todo.id}
-              className="flex items-center gap-3 p-4 rounded-lg bg-gray-800/50 border border-gray-700"
-            >
-              <input
-                type="checkbox"
-                checked={todo.completed}
-                onChange={() => toggleTodo(todo.id, todo.completed)}
-                className="w-5 h-5 rounded border-gray-600 bg-gray-700"
-              />
-              <span className={`flex-1 ${todo.completed ? 'line-through text-gray-500' : ''}`}>
-                {todo.title}
-              </span>
-              <button
-                onClick={() => deleteTodo(todo.id)}
-                className="text-red-500 hover:text-red-400"
+          {todos.length > 0 ? (
+            todos?.map((todo) => (
+              <li
+                key={todo.id}
+                className="flex items-center gap-3 p-4 rounded-lg bg-gray-800/50 border border-gray-700"
               >
-                Delete
-              </button>
-            </li>
-          ))}
+                <input
+                  type="checkbox"
+                  checked={todo.completed}
+                  onChange={() => toggleTodo(todo.id, todo.completed)}
+                  className="w-5 h-5 rounded border-gray-600 bg-gray-700"
+                />
+                <span
+                  className={`flex-1 ${todo.completed ? "line-through text-gray-500" : ""}`}
+                >
+                  {todo.title}
+                </span>
+                <button
+                  onClick={() => deleteTodo(todo.id)}
+                  className="text-red-500 hover:text-red-400"
+                >
+                  Delete
+                </button>
+              </li>
+            ))
+          ) : (
+            <div>Loading...</div>
+          )}
         </ul>
       </div>
     </main>
   );
-} 
+}
